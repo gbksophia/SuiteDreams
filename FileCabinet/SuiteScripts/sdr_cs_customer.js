@@ -19,7 +19,7 @@ function() {
     function pageInit(context) {
         var customer=context.currentRecord;
         var applyCoupon=customer.getValue('custentity_sdr_apply_coupon');
-        log.debug('Checkbox at Reset/Refresh/First (F=unchecked, T=checked)',applyCoupon);
+        log.debug('Checkbox at Reset/Refresh/First',applyCoupon);
     }
 
     /**
@@ -55,7 +55,19 @@ function() {
                 log.debug('Coupon Code Disabled(value=true)',couponCode.isDisabled);
             }
 
+
+
+            /*            if(applyCoupon=='true'){
+                            couponCode.isDisabled=false;
+                            couponCode.setValue('custentity_sdr_coupon_code','');
+                            log.debug('Coupon Code Enabled',couponCode.isDisabled);
+                        }else if(applyCoupon=='false'){
+                            couponCode.isDisabled=true;
+                            log.debug('Coupon Code Disabled',couponCode.isDisabled);
+                        }*/
         }
+
+
     }
 
     /**
