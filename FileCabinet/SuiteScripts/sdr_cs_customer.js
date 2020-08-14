@@ -43,32 +43,50 @@ function() {
             });
 
             var applyCoupon=customer.getValue('custentity_sdr_apply_coupon');
-            log.debug('Checkbox click so it changed (F=unchecked, T=checked)',applyCoupon);
+            log.debug('Checkbox click so it changed',applyCoupon);
 
             couponCode.isDisabled=!customer.getValue(context.fieldId);
-
             if(couponCode.isDisabled==false){
                 customer.setValue(couponCode.id,'');
-                log.debug('Coupon Code Enabled(value=false)',couponCode.isDisabled);
-
+                log.debug('Coupon Code Enabled()',couponCode.isDisabled);
             }else if(couponCode.isDisabled==true){
                 log.debug('Coupon Code Disabled(value=true)',couponCode.isDisabled);
             }
 
+            /* 내가 초기에 작성한 실행안되는 코드.
+            if(applyCoupon=='true'){
+                couponCode.isDisabled=false;
+                couponCode.setValue('custentity_sdr_coupon_code','');
+                log.debug('Coupon Code Enabled',couponCode.isDisabled);
+            }else if(applyCoupon=='false'){
+                couponCode.isDisabled=true;
+                log.debug('Coupon Code Disabled',couponCode.isDisabled);
+            }
+            */
 
+            /*  https://stackoverflow.com/questions/44183708/netsuite-suitescript-2-0-disable-field-based-on-checkbox
 
-            /*            if(applyCoupon=='true'){
-                            couponCode.isDisabled=false;
-                            couponCode.setValue('custentity_sdr_coupon_code','');
-                            log.debug('Coupon Code Enabled',couponCode.isDisabled);
-                        }else if(applyCoupon=='false'){
-                            couponCode.isDisabled=true;
-                            log.debug('Coupon Code Disabled',couponCode.isDisabled);
-                        }*/
+            Turns out that, and I never found this in the documentation, that once you get the field from currentRecord.currentRecord,
+            you can set it to disabled via field.isDisabled. Took me forever to find out that isDisabled was a property of field,
+            and then took a complete guess to see that isDisabled was a get/set call for ClientSide Scripts.
+            Below is the code that ended up working.    Answered by Godrules499 on May 25,2017 at 17:36
+
+            function fieldChanged(scriptContext) {
+                var customer = scriptContext.currentRecord;
+                if(scriptContext.fieldId == "custentity_sdr_apply_coupon"){
+                    debugger;
+                    var field = customer.getField("custentity_sdr_coupon_code");
+
+                    field.isDisabled = !customer.getValue(scriptContext.fieldId);
+                    if(field.isDisabled){
+                        customer.setValue(field.id, "");
+                    }
+                }
+            }
+             */
+
         }
-
-
-    }
+   }
 
     /**
      * Function to be executed when field is slaved.
