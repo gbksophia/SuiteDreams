@@ -35,6 +35,7 @@ function() {
      * @since 2015.2
      */
     function fieldChanged(context) {
+        //debugger;
         var customer=context.currentRecord;
 
         if(context.fieldId=='custentity_sdr_apply_coupon'){
