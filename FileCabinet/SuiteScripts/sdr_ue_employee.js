@@ -29,7 +29,12 @@ define(['N/record'],
                if(context.type == context.UserEventType.CREATE){
 
                     var phoneCall=record.create({
-                        type:record.Type.PHONE_CALL
+                        type:record.Type.PHONE_CALL,
+                        // SuiteDreams Phone Call Form(phone 필수항목) 사용하지 않고,
+                        // Standard Phone Call Form(internal id:-150)을 사용하겠다...
+                        defaultValues:{
+                            customform: -150
+                        }
                     });
 
                     phoneCall.setValue('title','Call HR for benefits.');
