@@ -26,12 +26,19 @@ define(['N/record'],
 
                 if(context.type==context.UserEventType.CREATE){
                     var task=record.create({
-                        type:record.Type.TASK
+                        type:record.Type.TASK,
+                        defaultValues: {
+                            customform: -120
+                        }
                     });
                     task.setValue('title','New Customer Follow-up.');
                     task.setValue('message','Please take care of this customer and follow-up with them soon.');
                     task.setValue('priority','HIGH');
                     task.setValue('company',customer.id);
+                    var salesrep=customer.getValue('salesrep');
+                    if(salesrep){
+                        task.setValue('salesrep',salesrep);
+                    }
                     task.save();
                 }
 
