@@ -1,5 +1,5 @@
 /**
- * @NApiVersion 2.x
+ * @NApiVersion 2.0
  * @NScriptType ClientScript
  * @NModuleScope SameAccount
  */
@@ -16,8 +16,27 @@ function() {
      *
      * @since 2015.2
      */
-    function pageInit(scriptContext) {
+    function pageInit(context) {
+        var employee=context.currentRecord;
+        var perfRevCount=employee.getLineCount({
+            sublistId: 'recmachcustrecord_sdr_perf_subordinate'
+        });
+        var notes ='This employee has '+ perfRevCount + ' performance reviews. \n';
 
+        var fRatingCount =0;
+        for(var i=0; i<perfRevCount; i++){
+            var ratingCode=employee.getSublistValue({
+                sublistId: 'recmachcustrecord_sdr_perf_subordinate',
+                fieldId: 'custrecord_sdr_perf_rating_code',
+                line: i
+            });
+
+            if(ratingCode == 'F'){
+                fRatingCount +=1;
+            }
+        }
+        notes += 'This employee has ' + fRatingCount + ' F-rated reviews';
+        alert(notes);
     }
 
     /**
@@ -79,8 +98,29 @@ function() {
      *
      * @since 2015.2
      */
-    function lineInit(scriptContext) {
+    function lineInit(context) {
+        var employee = context.currentRecord;
+        if(context.sublistId == 'recmachcustrecord_sdr_perf_subordinate'){
+            var reviewType=employee.getCurrentSublistValue({
+                sublistId : 'recmachcustrecord_sdr_perf_subordinate',
+                fieldId : 'custrecord_sdr_perf_review_type'
+            });
+            if(!reviewType){
+                employee.setCurrentSublistValue({
+                    sublistId : 'recmachcustrecord_sdr_perf_subordinate',
+                    fieldId : 'custrecord_sdr_perf_review_type',
+                    value: 1 //Salary Change
+                });
+                /*
+                employee.setCurrentSublistText({
+                    sublistId : 'recmachcustrecord_sdr_perf_subordinate',
+                    fieldId : 'custrecord_sdr_perf_review_type',
+                    value: 'Salary Change'
+                });
+                */
 
+            }
+        }
     }
 
     /**
@@ -121,8 +161,19 @@ function() {
      *
      * @since 2015.2
      */
-    function validateLine(scriptContext) {
-
+    function validateLine(context) {
+        var employee =context.currentRecord;
+        if(context.sublistId== 'recmachcustrecord_sdr_perf_subordinate'){
+            var increaseAmount=employee.getCurrentSublistValue({
+                sublistId : 'recmachcustrecord_sdr_perf_subordinate',
+                fieldId : 'custrecord_sdr_perf_sal_incr_amt'
+            });
+            if(increaseAmount > 5000) {
+                alert('Salary increased amount cannot be greater than 5,000.');
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -176,17 +227,21 @@ function() {
     }
 
     return {
-        //pageInit: pageInit,
+        pageInit: pageInit,
         fieldChanged: fieldChanged,
 /*
         postSourcing: postSourcing,
         sublistChanged: sublistChanged,
-        lineInit: lineInit,
 */
+        lineInit: lineInit,
         validateField: validateField,
-/*        validateLine: validateLine,
+        validateLine: validateLine,
+
+        /*
         validateInsert: validateInsert,
-        validateDelete: validateDelete,*/
+        validateDelete: validateDelete,
+        */
+
         saveRecord: saveRecord
     };
     
