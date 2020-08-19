@@ -3,11 +3,13 @@
  * @NAPIVersion 2.0
  */
 
-define(['N/record'],
+define(['N/record','N/email','N/runtime'],
     /**
      * @param {record} record
+     * @param {email} email
+     * @param {rumtime} runtime
      */
-    function(record) {
+    function(record, email, runtime) {
 
         return {
             afterSubmit:function (context) {
@@ -42,6 +44,13 @@ define(['N/record'],
                     task.save();
                 }
 
+                var user=runtime.getCurrentUser();
+                email.send({
+                    author: user.id,
+                    recipients: customer.id,
+                    subject: 'Welcome to SuiteDreams',
+                    body: 'Welcome! We are glad for you to be a customer of SuiteDreams.'
+                });
            }
 
         };
