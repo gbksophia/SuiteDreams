@@ -43,11 +43,30 @@ require(['N/search'],
 
         var searchResults= caseSearch.run().getRange({
             start: 0 ,
-            end: 999 //9
+            end: 9 //999
         });
 
         // var x = 0;
-        var stop= 'this is a stopper line';
+        //var stop= 'this is a stopper line';
+
+        for(var i=0; i < searchResults.length; i++){
+            var subject =searchResults[i].getValue('title');
+            var assignedTo=searchResults[i].getText('assigned');
+            var status=searchResults[i].getValue('status');
+            var department=searchResults[i].getValue({
+                name:'department',
+                join: 'employee'
+            });
+            var jobTitle=searchResults[i].getValue({
+                name:'title',
+                join: 'employee'
+            });
+
+            log.debug('Case Info','Subject : '+ subject + '\n'+
+                                   'Status :' + status + '\n' +
+                                    'Job Title :' + jobTitle);
+
+        }
 
     });
 
