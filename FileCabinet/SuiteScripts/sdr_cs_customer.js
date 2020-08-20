@@ -17,9 +17,20 @@ function() {
      * @since 2015.2
      */
     function pageInit(context) {
+        /*
         var customer=context.currentRecord;
         var applyCoupon=customer.getValue('custentity_sdr_apply_coupon');
         log.debug('Checkbox at Reset/Refresh/First',applyCoupon);
+         */
+
+        var customer=context.currentRecord;
+        var prodRefCount=customer.getLineCount({
+            sublistId: 'recmachcustrecord_sdr_prod_pref_customer'
+        });
+
+        var notes= 'This customer has ' + prodRefCount + ' product preferences. \n';
+
+        alert(notes);
     }
 
     /**
@@ -125,8 +136,21 @@ function() {
      *
      * @since 2015.2
      */
-    function lineInit(scriptContext) {
-
+    function lineInit(context) {
+        var customer=context.currentRecord;
+        if(context.sublistId == 'recmachcustrecord_sdr_prod_pref_customer'){
+            var qty=parseInt(customer.getCurrentSublistValue({
+                sublistId: 'recmachcustrecord_sdr_prod_pref_customer',
+                fieldId: 'custrecord_sdr_prod_pref_qty'
+            }));
+            if(isNaN(qty)){
+                customer.setCurrentSublistValue({
+                    sublistId: 'recmachcustrecord_sdr_prod_pref_customer',
+                    fieldId: 'custrecord_sdr_prod_pref_qty',
+                    value: 1
+                })
+            }
+        }
     }
 
     /**
@@ -158,8 +182,19 @@ function() {
      *
      * @since 2015.2
      */
-    function validateLine(scriptContext) {
-
+    function validateLine(context) {
+        var customer=context.currentRecord;
+        if(context.sublistId == 'recmachcustrecord_sdr_prod_pref_customer'){
+            var prefQty=parseInt(customer.getCurrentSublistValue({
+                sublistId: 'recmachcustrecord_sdr_prod_pref_customer',
+                fieldId: 'custrecord_sdr_prod_pref_qty'
+            }));
+            if(prefQty>10){
+                alert('You have selected a preferred quantity that exceeds the limit of 10.');
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -202,7 +237,31 @@ function() {
      * @since 2015.2
      */
     function saveRecord(context) {
+        var customer=context.currentRecord;
+        var applyCoupon = customer.getValue('custentity_sdr_apply_coupon');
+        var couponCode = customer.getValue('custentity_sdr_coupon_code');
+        if(applyCoupon == true && couponCode.length != 5){
+            alert('Coupon code must be at least 5 characters long.');
+            return false;
+        }
 
+        var sublistId='recmachcustrecord_sdr_prod_pref_customer';
+        var prodPrefCount=customer.getLineCount({
+            sublistId: sublistId
+        });
+        for(var i=0, sumProdPrefQty=0; i<prodPrefCount; i++){
+            var prodPrefQty=parseInt(customer.getSublistValue({
+                sublistId: sublistId,
+                fieldId: 'custrecord_sdr_prod_pref_qty',
+                line: i
+            }));
+            sumProdPrefQty= sumProdPrefQty + parseInt(prodPrefQty);
+        }
+        if(sumProdPrefQty > 25){
+            alert('The total preferred quantity across all product preferences has exceeded the limit of 25.');
+            return false;
+        }
+        return true;
     }
 
     return {
@@ -211,13 +270,14 @@ function() {
 /*
         postSourcing: postSourcing,
         sublistChanged: sublistChanged,
-        lineInit: lineInit,
 */
+        lineInit: lineInit,
         //validateField: validateField,
-/*        validateLine: validateLine,
+        validateLine: validateLine,
+/*
         validateInsert: validateInsert,
         validateDelete: validateDelete,*/
-        //saveRecord: saveRecord
+        saveRecord: saveRecord
     };
     
 });

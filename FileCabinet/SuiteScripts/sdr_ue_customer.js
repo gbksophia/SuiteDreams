@@ -12,6 +12,15 @@ define(['N/record','N/email','N/runtime'],
     function(record, email, runtime) {
 
         return {
+            beforeSubmit:function (context) {
+                var customer=context.newRecord;
+                if(context.type == context.UserEventType.CREATE){
+                    var salesRep=customer.getValue('salesrep');
+                    if(!salesRep){
+                        throw 'Save failed. Please make sure that the Sales Rep field is not empty. ';
+                    }
+                }
+            },
             afterSubmit:function (context) {
                 //log.debug("hello world");
 
@@ -51,8 +60,34 @@ define(['N/record','N/email','N/runtime'],
                     subject: 'Welcome to SuiteDreams',
                     body: 'Welcome! We are glad for you to be a customer of SuiteDreams.'
                 });
-           }
 
+                var event=record.create({
+                    type: record.Type.CALENDAR_EVENT, //'calendarevent',
+                    isDynamic:true
+                });
+
+                event.setValue('title','Welcome conversation with '+ customer.getValue('entityid'));
+                event.setValue('sendemail',true);
+                event.setValue('company',customer.id);
+
+                event.selectNewLine({sublistId: 'attendee'});
+                event.setCurrentSublistValue({
+                    sublistId:'attendee',
+                    fieldId:'attendee',
+                    value: customer.id
+                });
+                event.commitLine({sublistId:'attendee'});
+
+                event.selectNewLine({sublistId:'attendee'});
+                event.setCurrentSublistValue({
+                    sublistId:'attendee',
+                    fieldId:'attendee',
+                    value: customer.getValue('salesrep')
+                });
+                event.commitLine({sublistId:'attendee'});
+
+                event.save();
+           }
         };
 
     });
