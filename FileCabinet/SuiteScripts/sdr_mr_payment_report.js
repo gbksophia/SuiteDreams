@@ -35,17 +35,17 @@ function(search) {
     function map(context) {
         var paymentResult=JSON.parse(context.value);
 
-        log.debug('context.values (map)', context.value);
+        //log.debug('context.value (map)', context.value);
 
-        /*
-        *
+/*
+
 {
   "recordType": "customerpayment",
-  "id": "21412",
+  "id": "49",
   "values": {
     "entity": {
-      "value": "866",
-      "text": "Bosch, München"
+      "value": "22",
+      "text": "Bay Media Research"
     },
     "statusref": {
       "value": "deposited",
@@ -54,17 +54,34 @@ function(search) {
     "amountpaid": ".00"
   }
 }
-        * */
 
-        var customer=paymentResult.values.entity.text;
-        var status=paymentResult.values.statusref.text;
-        var amount=paymentResult.value.amountpaid;
+{
+  "recordType": "customerpayment",
+  "id": "51",
+  "values": {
+    "entity": {
+      "value": "30",
+      "text": "Jenning Financial"
+    },
+    "statusref": {
+      "value": "notDeposited",
+      "text": "Not Deposited"
+    },
+    "amountpaid": ".00"
+  }
+}
+
+*/
+
+        //var customer=paymentResult.values.entity.text;
+        //var status=paymentResult.values.statusref.value;
+        //var amount=paymentResult.value.amountpaid;
 
         context.write({
-            key:customer,
+            key: paymentResult.values.entity.text,
             value: {
-                status: status,
-                amount: amount
+                status: paymentResult.values.statusref.value,
+                amount: paymentResult.values.amountpaid
             }
         });
 
@@ -81,12 +98,16 @@ function(search) {
         var undepositedT=0;
 
         for(var i in context.values){
-            var val=JSON.parse(context.values[i]);
-            if(val.status=='Deposited'){
-                depositedT += parseFloat(val.amount);
+            var value=JSON.parse(context.values[i]);
+
+            //log.debug('context.values[i].status',value.status);
+            //log.debug('context.values[i].amount',value.amount);
+
+            if(value.status =='deposited'){
+                depositedT += parseFloat(value.amount);
             }
-            if(val.status=='Not Deposited'){
-                undepositedT += parseFloat(val.amount);
+            if(value.status =='notDeposited'){
+                undepositedT += parseFloat(value.amount);
             }
         }
         log.debug(context.key,' Deposit Total : ' + depositedT + '\n'+
@@ -103,9 +124,9 @@ function(search) {
      */
     function summarize(summary) {
         var type=summary.toString();
-        log.audit(type + 'Usage Consumed ', summary.usage);
-        log.audit(type + 'Number of Queues used', summary.concurrency);
-        log.audit(type + 'Number of Yields done ', summary.yields);
+        log.audit(type + ' Usage Consumed ', summary.usage);
+        log.audit(type + ' Number of Queues used ', summary.concurrency);
+        log.audit(type + ' Number of Yields done ', summary.yields);
 
     }
 
