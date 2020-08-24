@@ -3,13 +3,14 @@
  * @NAPIVersion 2.0
  */
 
-define(['N/record','N/email','N/runtime'],
+define(['N/record','N/email','N/runtime','N/task'],
     /**
      * @param {record} record
      * @param {email} email
      * @param {rumtime} runtime
+     * @param {task} taskMod
      */
-    function(record, email, runtime) {
+    function(record, email, runtime, taskMod) {
 
         return {
             beforeSubmit:function (context) {
@@ -30,7 +31,7 @@ define(['N/record','N/email','N/runtime'],
                 //var salesrepName=customer.getText('salesrep');
                 var couponCode=customer.getValue('custentity_sdr_coupon_code');
 
-                log.audit('CUSTOMER ID', customerId);
+/*                log.audit('CUSTOMER ID', customerId);
                 log.audit('Customer Email',customerEmail);
                 //log.audit('SALES REP Name', salesrepName);
                 log.audit('COUPON CODE',couponCode);
@@ -86,7 +87,20 @@ define(['N/record','N/email','N/runtime'],
                 });
                 event.commitLine({sublistId:'attendee'});
 
-                event.save();
+                event.save();*/
+
+                //MapReduce Script로 Script Parameter를 이용하여 값 넘기기...
+                var mrTask=taskMod.create({
+                    taskType: taskMod.TaskType.MAP_REDUCE
+                });
+
+                mrTask.scriptId='customscript_sdr_mr_customer_payments';
+                mrTask.deploymentId='customdeploy_sdr_mr_customer_payments';
+                mrTask.params={
+                    custscript_sdr_customer_id : customer.id
+                };
+                mrTask.submit();
+
            }
         };
 

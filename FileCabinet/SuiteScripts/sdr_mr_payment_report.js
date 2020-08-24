@@ -3,11 +3,12 @@
  * @NScriptType MapReduceScript
  * @NModuleScope SameAccount
  */
-define(['N/search'],
+define(['N/search', 'N/runtime'],
 /**
- * @param{search} search
+ * @param {search} search
+ * @param {runtime} runtime
  */
-function(search) {
+function(search, runtime) {
    
     /**
      * Marks the beginning of the Map/Reduce process and generates input data.
@@ -20,10 +21,33 @@ function(search) {
      * @since 2015.1
      */
     function getInputData() {
+
+        //sdr_ue_customer에서 전달받은 파라미터값 변수에 저장.
+        var customerId=runtime.getCurrentScript().getParameter({
+            name: 'custscript_sdr_customer_id'
+        });
+
+        //log.debug('Customer Id (Script Parameter)', customerId);
+
+        var paymentSearch=search.create({
+            type: search.Type.TRANSACTION,
+            filters: [['type', search.Operator.ANYOF, 'CustPymt'], 'and',
+                      ['mainline', search.Operator.IS, true], 'and',
+                      ['entity', search.Operator.ANYOF, customerId]  //entity=name
+                     ],
+            columns: ['entity', 'statusref', 'amount'] // 'amountpaid']
+        });
+
+        return paymentSearch;
+
+
+        /*
         return{
             type: 'search',
             id: 153
         };
+        */
+
     }
 
     /**
@@ -81,7 +105,7 @@ function(search) {
             key: paymentResult.values.entity.text,
             value: {
                 status: paymentResult.values.statusref.value,
-                amount: paymentResult.values.amountpaid
+                amount: paymentResult.values.amount //amountpaid
             }
         });
 
