@@ -3,12 +3,14 @@
  * @NScriptType ClientScript
  * @NModuleScope SameAccount
  */
-define(['N/runtime'],
+define(['N/runtime', 'N/https', 'N/url'],
     /**
      * @param {runtime} runtime
+     * @param {https} https
+     * @param {url} url
      */
 
-function(runtime) {
+function(runtime, https, url) {
     
     /**
      * Function to be executed after page is initialized.
@@ -232,11 +234,21 @@ function(runtime) {
         var employee=context.currentRecord;
         var empCode=employee.getValue('custentity_sdr_employee_code');
 
-        if(empCode=='x'){
+        var restletUrl=url.resolveScript({
+            scriptId:'customscript_sdr_rl_validate_emp_code',
+            deploymentId: 'customdeploy_sdr_rl_validate_emp_code'
+        })
+
+        var response=https.get({
+            url: restletUrl + empCode
+        });
+
+        if(response.body=='invalid'){
             alert('Invalid Employee Code value. Please try again.');
             return false;
         }
         return true;
+
     }
 
     return {
@@ -247,7 +259,7 @@ function(runtime) {
         sublistChanged: sublistChanged,
 */
         lineInit: lineInit,
-        validateField: validateField,
+        //validateField: validateField,
         validateLine: validateLine,
 
         /*

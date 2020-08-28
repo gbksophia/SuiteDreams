@@ -9,6 +9,7 @@ define(['N/record','N/email','N/runtime','N/task'],
      * @param {email} email
      * @param {rumtime} runtime
      * @param {task} taskMod
+     * @param {redirect} redirect
      */
     function(record, email, runtime, taskMod) {
 
@@ -31,7 +32,7 @@ define(['N/record','N/email','N/runtime','N/task'],
                 //var salesrepName=customer.getText('salesrep');
                 var couponCode=customer.getValue('custentity_sdr_coupon_code');
 
-/*                log.audit('CUSTOMER ID', customerId);
+                log.audit('CUSTOMER ID', customerId);
                 log.audit('Customer Email',customerEmail);
                 //log.audit('SALES REP Name', salesrepName);
                 log.audit('COUPON CODE',couponCode);
@@ -87,7 +88,7 @@ define(['N/record','N/email','N/runtime','N/task'],
                 });
                 event.commitLine({sublistId:'attendee'});
 
-                event.save();*/
+                event.save();
 
                 //MapReduce Script로 Script Parameter를 이용하여 값 넘기기...
                 var mrTask=taskMod.create({
@@ -100,6 +101,8 @@ define(['N/record','N/email','N/runtime','N/task'],
                     custscript_sdr_customer_id : customer.id
                 };
                 mrTask.submit();
+
+
 
            }
         };
