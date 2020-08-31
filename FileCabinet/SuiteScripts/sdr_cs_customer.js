@@ -1,5 +1,5 @@
 /**
- * @NApiVersion 2.x
+ * @NApiVersion 2.0
  * @NScriptType ClientScript
  * @NModuleScope SameAccount
  */
@@ -171,13 +171,37 @@ function(https, url) {
      * @since 2015.2
      */
     function validateField(context) {
-        var customer=context.currentRecord;
-        var applyCoupon = customer.getValue('custentity_sdr_apply_coupon');
-        var couponCode = customer.getValue('custentity_sdr_coupon_code');
-        if(applyCoupon == true && couponCode.length != 5){
-            alert('Coupon code must be at least 5 characters long.');
-            return false;
+        if(context.fieldId=='custentity_sdr_coupon_code'){
+            var customer=context.currentRecord;
+            var applyCoupon = customer.getValue('custentity_sdr_apply_coupon');
+            var couponCode = customer.getValue('custentity_sdr_coupon_code');
+
+            /* Exercises 04-5.
+            if(applyCoupon == true && couponCode.length != 5){
+                alert('Coupon code must be at least 5 characters long.');
+                return false;
+            }
+             */
+
+            if(applyCoupon && couponCode){
+                var rlURL=url.resolveScript({
+                    scriptId:'customscript_sdr_rl_coupon_code',
+                    deploymentId: 'customdeploy_sdr_rl_coupon_code'
+                });
+
+                var response=https.get({
+                    url: rlURL + '&custparam_couponcode=' + couponCode
+                });
+
+                log.debug('https.get RETURN', response);
+
+                if(response.body=='invalid'){
+                    alert('The coupon code is invalid.');
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     /**
