@@ -239,8 +239,10 @@ function(runtime, https, url) {
             deploymentId: 'customdeploy_sdr_rl_validate_emp_code'
         })
 
+        // Request for information from Web service or RESTlets by using the 'N/https'(Suitelet, RESTlet).
+        // Use 'N/http' module when using non-NetSuite web services....
         var response=https.get({
-            url: restletUrl + empCode
+            url: restletUrl + '&sdr_emp_code=' + empCode
         });
 
         if(response.body=='invalid'){

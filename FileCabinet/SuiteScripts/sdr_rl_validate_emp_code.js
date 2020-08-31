@@ -1,5 +1,5 @@
 /**
- * @NApiVersion 2.x
+ * @NApiVersion 2.0
  * @NScriptType Restlet
  * @NModuleScope SameAccount
  */
@@ -14,6 +14,8 @@ function() {
      * @returns {string | Object} HTTP response body; return string when request Content-Type is 'text/plain'; return Object when request Content-Type is 'application/json'
      * @since 2015.1
      */
+
+    // Getting the parameters from the client-side script.
     function doGet(params) {
 
         var empCode=params.sdr_emp_code;
