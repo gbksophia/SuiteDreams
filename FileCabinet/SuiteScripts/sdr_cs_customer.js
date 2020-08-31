@@ -3,9 +3,12 @@
  * @NScriptType ClientScript
  * @NModuleScope SameAccount
  */
-define([],
-
-function() {
+define(['N/https', 'N/url'],
+/**
+ * @param {https} https
+ * @param {url} url
+ */
+function(https, url) {
     
     /**
      * Function to be executed after page is initialized.
@@ -168,7 +171,13 @@ function() {
      * @since 2015.2
      */
     function validateField(context) {
-
+        var customer=context.currentRecord;
+        var applyCoupon = customer.getValue('custentity_sdr_apply_coupon');
+        var couponCode = customer.getValue('custentity_sdr_coupon_code');
+        if(applyCoupon == true && couponCode.length != 5){
+            alert('Coupon code must be at least 5 characters long.');
+            return false;
+        }
     }
 
     /**
@@ -272,7 +281,7 @@ function() {
         sublistChanged: sublistChanged,
 */
         lineInit: lineInit,
-        //validateField: validateField,
+        validateField: validateField,
         validateLine: validateLine,
 /*
         validateInsert: validateInsert,
