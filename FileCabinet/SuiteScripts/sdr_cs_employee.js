@@ -242,6 +242,10 @@ function(runtime, https, url) {
         // Request for information from Web service or RESTlets by using the 'N/https'(Suitelet, RESTlet).
         // Use 'N/http' module when using non-NetSuite web services....
         var response=https.get({
+
+            // url:'/app/site/hosting/restlet.nl?script=108&deploy=1'
+            // (SuiteDreams RL Validate Employee Code:customscript_sdr_rl_validate_emp_code)
+
             url: restletUrl + '&sdr_emp_code=' + empCode
         });
 

@@ -26,7 +26,6 @@ function(record, runtime) {
         var countItems=salesOrder.getLineCount({sublistId:'item'}); // SO의 Items('item') sublist 라인 수.
         var notes='Last Order Date: ' + orderDate + '\n' +
                    'Unique items ordered: ' + countItems;
-
         var customerId=salesOrder.getValue('entity'); // SO의 Customer('entity') field 값.
 
         // "Go To Record" Action으로 customerId와 동일한 Customer record로 이동.
@@ -38,9 +37,7 @@ function(record, runtime) {
         //Sales Order에서 정보(notes)를 Comments field에 저장.
         customer.setValue('comments', notes);
         customer.save();
-
     }
-
     return {
         onAction : onAction
     };
