@@ -54,6 +54,7 @@ function(record, redirect) {
         var financePrice=salesOrder.getValue('custbody_sdr_financing_price');
         var orderId=salesOrder.id;
 
+        //sdr_sl_salesorder_finance.js Suitelet에 URL 파라미터로 값 전달.
         redirect.toSuitelet({
             scriptId:'customscript_sdr_salesorder_finance',
             deploymentId: 'customdeploy_sdr_sl_salesorder_finance',

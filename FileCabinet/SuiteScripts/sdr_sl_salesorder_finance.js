@@ -25,6 +25,8 @@ function(record, redirect, serverWidget) {
         var response=context.response;
 
         if(request.method=='GET'){
+
+            //sdr_ue_salesorder.js afterSubmit의 redirect.toSuitelet에서 넘겨받은 url 파라미터.
             var orderNum=request.parameters.sdr_ordernum;
             var customer=request.parameters.sdr_customer;
             var total=request.parameters.sdr_total;

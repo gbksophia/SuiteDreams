@@ -152,6 +152,7 @@ function(search, runtime) {
         log.audit(type + ' Number of Queues used ', summary.concurrency);
         log.audit(type + ' Number of Yields done ', summary.yields);
 
+
     }
 
     return {
